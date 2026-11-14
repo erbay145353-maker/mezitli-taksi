@@ -1,4 +1,4 @@
-# Mezitli En Güvende Taksi
+# Mezitli En Güvenli Taksi
 
 Mezitli ve çevresinde 7/24 güvenilir taksi hizmeti.
 
