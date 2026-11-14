@@ -13,7 +13,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mezitli Taksi | Mezitli’de 7/24 Taksi Çağır – Mezitli En Güvenli Taksi</title>
-<meta name="description" content="Mezitli Taksi için 7/24 Mezitli En Güvenli Taksi’yi arayın. Kuyuluk, Viranşehir, Davultepe, Yenişehir ve Üniversite Caddesi çevresinden taksi talebinizi iletin: 0545 815 05 92.">
+<meta name="description" content="Mezitli taksi için 7/24 telefonla arayın veya WhatsApp’tan konum gönderin. Kuyuluk, Viranşehir, Davultepe ve Yenişehir çevresi: 0545 815 05 92.">
 <link rel="canonical" href="https://mezitlitaksiagency.com/">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#101820">
@@ -135,6 +135,37 @@ a:focus,summary:focus{outline:3px solid #fff;outline-offset:3px}
  .mobilebar .call{background:var(--yellow);color:#111}.mobilebar .wa{background:var(--green);color:white}
  footer{padding-bottom:105px}
 }
+
+/* Görsel iyileştirmeler: okunabilirlik, mobil kullanım ve net iletişim */
+:focus-visible{outline:3px solid var(--yellow);outline-offset:4px}
+.nav{min-height:76px}
+header{box-shadow:0 8px 28px rgba(0,0,0,.16)}
+.hero{padding-top:88px;padding-bottom:88px}
+.hero h1{letter-spacing:-1.2px;text-wrap:balance}
+.hero p{line-height:1.75}
+.quick-trust{padding:0 20px 28px;background:#0a1119}
+.quick-trust-inner{max-width:960px;margin:-1px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.quick-trust-inner>div{display:grid;grid-template-columns:42px 1fr;column-gap:10px;align-items:center;padding:15px 18px;background:#172635;border:1px solid #304355;border-radius:13px}
+.quick-icon{grid-row:span 2;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(255,201,40,.13);color:var(--yellow);font-size:23px}
+.quick-trust strong{font-size:14px;color:#fff}
+.quick-trust small{font-size:12px;color:#b9c5cf}
+.feature,.step{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.feature:hover{transform:translateY(-4px);border-color:rgba(255,201,40,.55);box-shadow:0 14px 34px rgba(0,0,0,.18)}
+.step:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(15,30,45,.1)}
+.btn{min-height:50px}
+.section-title{text-wrap:balance}
+@media(max-width:700px){
+ .hero{padding-top:62px;padding-bottom:55px}
+ .quick-trust{padding:0 16px 22px}
+ .quick-trust-inner{grid-template-columns:1fr;gap:8px}
+ .quick-trust-inner>div{padding:11px 14px}
+ .quick-icon{width:36px;height:36px}
+ .hero h1{letter-spacing:-.7px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*::before,*::after{transition:none!important;animation:none!important}
+}
 </style>
 </head>
 <body>
@@ -159,6 +190,14 @@ a:focus,summary:focus{outline:3px solid #fff;outline-offset:3px}
     <a class="btn whatsapp" href="https://wa.me/905458150592?text=Merhaba%2C%20taksi%20%C3%A7a%C4%9F%C4%B1rmak%20istiyorum.%20Konumumu%20payla%C5%9F%C4%B1yorum.">◉ WHATSAPP'TAN YAZ</a>
    </div>
    <p class="hero-note">Mezitli En Güvenli Taksi · 0545 815 05 92</p>
+  </div>
+ </section>
+
+ <section class="quick-trust" aria-label="Taksi iletişim bilgileri">
+  <div class="quick-trust-inner">
+   <div><span class="quick-icon">◷</span><strong>7/24 İletişim</strong><small>Telefonla bize ulaşın</small></div>
+   <div><span class="quick-icon">⌖</span><strong>Mezitli ve Mersin</strong><small>Konumunuzu paylaşın</small></div>
+   <div><span class="quick-icon">☏</span><strong>Kolay Çağrı</strong><small>Telefon veya WhatsApp</small></div>
   </div>
  </section>
 
