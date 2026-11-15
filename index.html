@@ -518,84 +518,71 @@ function sendMyLocation(){
 
 
 <script>
-/* Hafif, piyano tınılı arka plan melodisi. Tarayıcı kuralı gereği kullanıcı dokunuşuyla başlar. */
+/* Akıcı, yumuşak piyano benzeri ambiyans; yalnızca ziyaretçi açarsa çalar. */
 (function(){
   const button = document.getElementById('background-music-toggle');
   if (!button) return;
-  let audioContext = null;
-  let timer = null;
-  let noteIndex = 0;
-  let master = null;
-  const melody = [60,64,67,72,67,64,62,65,69,74,69,65,60,64,67,72];
-  function playNote(midi, startTime, duration){
-    const fundamental = 440 * Math.pow(2, (midi - 69) / 12);
-    const voice = audioContext.createGain();
-    voice.gain.setValueAtTime(0.0001, startTime);
-    voice.gain.exponentialRampToValueAtTime(0.10, startTime + 0.018);
-    voice.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-    voice.connect(master);
-    [1, 2, 3].forEach(function(partial, i){
-      const osc = audioContext.createOscillator();
-      const tone = audioContext.createGain();
-      osc.type = i === 0 ? 'triangle' : 'sine';
-      osc.frequency.value = fundamental * partial;
-      tone.gain.value = i === 0 ? 0.72 : (i === 1 ? 0.20 : 0.06);
-      osc.connect(tone);
-      tone.connect(voice);
-      osc.start(startTime);
-      osc.stop(startTime + duration + 0.03);
-    });
+  let ctx = null, master = null, timer = null, step = 0;
+  const chords = [
+    [60,64,67,71], [57,60,64,69], [53,57,60,64], [55,59,62,67]
+  ];
+  function note(freq, when, duration, volume, type){
+    const osc = ctx.createOscillator();
+    const amp = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, when);
+    amp.gain.setValueAtTime(0.0001, when);
+    amp.gain.exponentialRampToValueAtTime(volume, when + 0.22);
+    amp.gain.setTargetAtTime(0.0001, when + duration * 0.55, duration * 0.22);
+    osc.connect(amp);
+    amp.connect(master);
+    osc.start(when);
+    osc.stop(when + duration + 1.2);
   }
-  function tick(){
-    if (!audioContext || !master) return;
-    const now = audioContext.currentTime + 0.03;
-    const note = melody[noteIndex % melody.length];
-    playNote(note, now, 1.25);
-    if (noteIndex % 4 === 0) {
-      const bass = [48, 45, 43, 47][Math.floor(noteIndex / 4) % 4];
-      playNote(bass, now, 2.1);
+  function midi(n){ return 440 * Math.pow(2,(n-69)/12); }
+  function phrase(){
+    if (!ctx || !master) return;
+    const t = ctx.currentTime + 0.08;
+    const chord = chords[Math.floor(step/4)%chords.length];
+    const pattern = [0,2,1,3];
+    const tone = chord[pattern[step%4]];
+    // Yumuşak akor pedalı ve akıcı, aralıklı üst notalar
+    if (step % 4 === 0) {
+      chord.forEach((n,i)=>note(midi(n),t+i*0.035,5.2,0.018,'sine'));
+      note(midi(chord[0]-12),t,4.8,0.026,'triangle');
     }
-    noteIndex++;
+    note(midi(tone+12),t,2.5,0.035,'sine');
+    note(midi(tone+12),t+0.025,2.2,0.009,'triangle');
+    step++;
   }
-  async function startMusic(){
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) {
-      alert('Bu tarayıcı arka plan sesini desteklemiyor.');
-      return;
-    }
-    audioContext = new AudioCtx();
-    if (audioContext.state === 'suspended') await audioContext.resume();
-    master = audioContext.createGain();
-    master.gain.value = 0.20;
-    master.connect(audioContext.destination);
-    noteIndex = 0;
-    tick();
-    timer = window.setInterval(tick, 1800);
-    button.textContent = '♫ Arka Plan Müziğini Kapat';
-    button.setAttribute('aria-pressed', 'true');
+  async function start(){
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) { alert('Bu tarayıcı arka plan sesini desteklemiyor.'); return; }
+    ctx = new AudioContext();
+    if (ctx.state === 'suspended') await ctx.resume();
+    master = ctx.createGain();
+    master.gain.value = 0.62;
+    master.connect(ctx.destination);
+    step = 0;
+    phrase();
+    timer = window.setInterval(phrase, 1050);
+    button.textContent = '♫ Müziği Kapat';
+    button.setAttribute('aria-pressed','true');
   }
-  async function stopMusic(){
-    if (timer !== null) window.clearInterval(timer);
+  async function stop(){
+    if (timer !== null) clearInterval(timer);
     timer = null;
-    if (audioContext) {
-      const oldContext = audioContext;
-      audioContext = null;
-      master = null;
-      try { await oldContext.close(); } catch(e) {}
-    }
-    button.textContent = '♫ Arka Plan Müziğini Aç';
-    button.setAttribute('aria-pressed', 'false');
+    const old = ctx;
+    ctx = null; master = null;
+    if (old) { try { await old.close(); } catch(e) {} }
+    button.textContent = '♫ Müziği Aç';
+    button.setAttribute('aria-pressed','false');
   }
-  button.addEventListener('click', function(){
-    if (timer !== null) stopMusic();
-    else startMusic().catch(function(){
-      stopMusic();
-      alert('Müzik başlatılamadı. Lütfen tekrar deneyin.');
-    });
+  button.addEventListener('click',()=>{
+    if (timer !== null) stop();
+    else start().catch(()=>{ stop(); alert('Müzik başlatılamadı. Tekrar deneyin.'); });
   });
-  document.addEventListener('visibilitychange', function(){
-    if (document.hidden && timer !== null) stopMusic();
-  });
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden && timer!==null) stop(); });
 })();
 </script>
 
