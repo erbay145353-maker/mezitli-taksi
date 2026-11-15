@@ -239,6 +239,18 @@ header,footer{background:#050505;border-color:#242424}
 .welcome-voice-btn:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
 </style>
+<!-- OneSignal Web Push -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "91ccfd05-83da-4110-8991-d295a3fe65ee",
+      safari_web_id: "web.onesignal.auto.01ea4289-b460-45e4-8d90-838752554827",
+      notifyButton: { enable: true }
+    });
+  });
+</script>
 </head>
 <body>
 <div class="topline"></div>
