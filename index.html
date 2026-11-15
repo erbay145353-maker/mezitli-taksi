@@ -435,9 +435,9 @@ function toggleWelcomeVoice(){
   }
   const utterance = new SpeechSynthesisUtterance(welcomeGreeting);
   utterance.lang = 'tr-TR';
-  utterance.rate = 0.92;
-  utterance.pitch = 1.08;
-  utterance.volume = 1;
+  utterance.rate = 0.84;
+  utterance.pitch = 0.98;
+  utterance.volume = 0.88;
   const voices = window.speechSynthesis.getVoices();
   const turkishVoices = voices.filter(voice => voice.lang && voice.lang.toLowerCase().startsWith('tr'));
   const femaleVoice = turkishVoices.find(voice => /female| kadın|woman|seda|filiz|yelda|emel|defne|female/i.test(voice.name));
