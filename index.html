@@ -396,7 +396,7 @@ function sendMyLocation(){
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
     const mapUrl = 'https://www.google.com/maps?q=' + encodeURIComponent(lat + ',' + lon);
-    const message = 'Merhaba, Mezitli Taksi çağırmak istiyorum. Bulunduğum konum: ' + mapUrl;
+    const message = '🚕 MEZİTLİ TAKSİ YOLCULUK TALEBİ\nMerhaba, taksi istiyorum.\n📍 Alınış konumum: ' + mapUrl + '\nLütfen bu konuma göre yönlendirme yapar mısınız?';
     if (status) status.textContent = 'Konum bağlantısı hazırlandı. WhatsApp açılıyor…';
     window.location.href = 'https://wa.me/905458150592?text=' + encodeURIComponent(message);
   }, function(error){
