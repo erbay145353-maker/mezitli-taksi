@@ -198,14 +198,14 @@ header{box-shadow:0 8px 28px rgba(0,0,0,.16)}
 
 /* Ana sayfa butonları ve 7/24 rozeti için yumuşak parlama */
 @keyframes softPulse{
-  0%,100%{filter:brightness(1);box-shadow:0 0 0 rgba(255,201,40,0)}
-  50%{filter:brightness(1.13);box-shadow:0 0 18px rgba(255,201,40,.28)}
+  0%,100%{filter:brightness(1);box-shadow:0 0 3px rgba(255,201,40,.22)}
+  50%{filter:brightness(1.38) saturate(1.25);box-shadow:0 0 28px rgba(255,201,40,.72),0 0 42px rgba(255,201,40,.28)}
 }
-.hero .actions .btn{animation:softPulse 2.8s ease-in-out infinite}
-.hero .actions .btn:nth-child(2){animation-delay:.35s}
-.hero .actions .btn:nth-child(3){animation-delay:.7s}
-.hero .actions .btn:nth-child(4){animation-delay:1.05s}
-.hero .pill{animation:softPulse 2.8s ease-in-out infinite}
+.hero .actions .btn{animation:softPulse 1.25s ease-in-out infinite}
+.hero .actions .btn:nth-child(2){animation-delay:.16s}
+.hero .actions .btn:nth-child(3){animation-delay:.32s}
+.hero .actions .btn:nth-child(4){animation-delay:.48s}
+.hero .pill{color:#ffe27a;border-color:#ffc928;text-shadow:0 0 9px rgba(255,201,40,.85);animation:softPulse 1.25s ease-in-out infinite}
 
 /* Tam siyah premium tema */
 :root{--ink:#000000;--panel:#101010;--muted:#d0d0d0}
