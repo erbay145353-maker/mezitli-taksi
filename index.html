@@ -227,6 +227,11 @@ header,footer{background:#050505;border-color:#242424}
 .step:hover{box-shadow:0 14px 30px rgba(0,0,0,.55)}
 .home-menu-link:hover{background:#1a1a1a;border-color:var(--yellow)}
 .final-cta{background:#ffc928;color:#111}
+/* Üst bölümde kayan karşılama yazısı */
+.welcome-marquee{max-width:430px;margin:0 auto 15px;overflow:hidden;border:1px solid rgba(255,201,40,.35);border-radius:999px;background:rgba(255,201,40,.07);color:#ffe27a;padding:7px 0;white-space:nowrap}
+.welcome-marquee span{display:inline-block;padding-left:100%;font-size:14px;font-weight:900;letter-spacing:1.5px;text-shadow:0 0 10px rgba(255,201,40,.45);animation:welcomeSlide 11s linear infinite}
+@keyframes welcomeSlide{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@media(prefers-reduced-motion:reduce){.welcome-marquee span{animation:none;padding-left:0}}
 </style>
 </head>
 <body>
@@ -243,6 +248,7 @@ header,footer{background:#050505;border-color:#242424}
 <main id="anasayfa">
  <section class="hero">
   <div class="hero-inner">
+   <div class="welcome-marquee" aria-label="Mezitli Taksi’ye hoş geldiniz"><span>✨ MEZİTLİ TAKSİ’YE HOŞ GELDİNİZ • GÜVENLİ VE KONFORLU YOLCULUK ✨</span></div>
    <span class="pill">● 7 GÜN 24 SAAT ULAŞABİLİRSİNİZ</span>
    <h1>Mezitli'de taksi mi lazım?<br><span>Hemen bize ulaşın.</span></h1>
    <p>Mezitli Taksi hizmeti için telefonla arayın veya WhatsApp'tan yolculuk talebinizi iletin. Mezitli ve Mersin çevresinde bize ulaşın.</p>
