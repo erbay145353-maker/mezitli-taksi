@@ -184,6 +184,17 @@ header{box-shadow:0 8px 28px rgba(0,0,0,.16)}
 .milestone-thanks{font-weight:800;color:#fff!important;margin-bottom:5px!important}
 @media(max-width:700px){.milestone{padding:32px 16px}.milestone-card{padding:24px 17px}}
 
+
+/* Ana sayfa bolum gecis butonlari */
+.home-menu{padding:30px 20px 38px;background:#101b26;border-bottom:1px solid #2b3e4f}
+.home-menu-inner{max-width:1000px;margin:auto}
+.home-menu-title{text-align:center;color:#fff;font-size:19px;font-weight:900;margin:0 0 18px}
+.home-menu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.home-menu-link{display:flex;align-items:center;justify-content:center;gap:9px;min-height:58px;padding:13px 14px;border:1px solid #3b5062;border-radius:12px;background:#1b2d3d;color:#fff;text-decoration:none;text-align:center;font-weight:800;transition:background .18s,border-color .18s,transform .18s}
+.home-menu-link:hover{background:#293f52;border-color:var(--yellow);transform:translateY(-2px)}
+.home-menu-link span{font-size:20px}
+@media(max-width:700px){.home-menu{padding:25px 16px 30px}.home-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.home-menu-link{min-height:62px;padding:11px 8px;font-size:14px}}
+
 </style>
 </head>
 <body>
@@ -211,6 +222,19 @@ header{box-shadow:0 8px 28px rgba(0,0,0,.16)}
   </div>
  </section>
 
+ <section class="home-menu" aria-label="Ana sayfa bölüm menüsü">
+  <div class="home-menu-inner">
+   <h2 class="home-menu-title">Aradığınız bölüme kolayca geçin</h2>
+   <div class="home-menu-grid">
+    <a class="home-menu-link" href="#hizmetler"><span>🚖</span> Hizmetlerimiz</a>
+    <a class="home-menu-link" href="#bolge"><span>📍</span> Hizmet Bölgeleri</a>
+    <a class="home-menu-link" href="#konum"><span>🗺️</span> Konumumuz</a>
+    <a class="home-menu-link" href="#nobetci-eczaneler"><span>💊</span> Nöbetçi Eczaneler</a>
+    <a class="home-menu-link" href="#sss"><span>❓</span> Sık Sorulan Sorular</a>
+    <a class="home-menu-link" href="https://wa.me/905458150592?text=Merhaba%2C%20Mezitli%20Taksi%27ye%20ula%C5%9Fmak%20istiyorum."><span>💬</span> WhatsApp İletişim</a>
+   </div>
+  </div>
+ </section>
 
  <section class="milestone" aria-labelledby="milestone-title">
   <div class="milestone-card">
