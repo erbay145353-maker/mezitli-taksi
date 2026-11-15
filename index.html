@@ -491,5 +491,22 @@ function sendMyLocation(){
 }
 </script>
 
+
+<script>
+/* Mezitli Bölge Taksi ziyaret bildirimi */
+(function () {
+  try {
+    if (sessionStorage.getItem('mezitli_visit_notice_sent')) return;
+    sessionStorage.setItem('mezitli_visit_notice_sent', '1');
+    fetch('https://mezitli-taksi-bildirim.erbay145353.workers.dev/visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'website_visit' }),
+      keepalive: true
+    }).catch(function () {});
+  } catch (e) {}
+})();
+</script>
+
 </body>
 </html>
