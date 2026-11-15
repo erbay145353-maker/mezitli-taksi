@@ -232,6 +232,12 @@ header,footer{background:#050505;border-color:#242424}
 .welcome-marquee span{display:inline-block;padding-left:100%;font-size:14px;font-weight:900;letter-spacing:1.5px;text-shadow:0 0 10px rgba(255,201,40,.45);animation:welcomeSlide 11s linear infinite}
 @keyframes welcomeSlide{from{transform:translateX(0)}to{transform:translateX(-100%)}}
 @media(prefers-reduced-motion:reduce){.welcome-marquee span{animation:none;padding-left:0}}
+
+/* Kadın sesiyle karşılama düğmesi */
+.welcome-voice-btn{border:1px solid #ffc928;background:#17130a;color:#ffe27a;cursor:pointer;box-shadow:0 0 14px rgba(255,201,40,.2)}
+.welcome-voice-btn:hover{background:#29200b;box-shadow:0 0 22px rgba(255,201,40,.42)}
+.welcome-voice-btn:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
 </style>
 </head>
 <body>
@@ -257,6 +263,7 @@ header,footer{background:#050505;border-color:#242424}
     <a class="btn whatsapp" href="https://wa.me/905458150592?text=Merhaba%2C%20taksi%20%C3%A7a%C4%9F%C4%B1rmak%20istiyorum.%20Konumumu%20payla%C5%9F%C4%B1yorum.">◉ WHATSAPP'TAN YAZ</a>
     <a class="btn whatsapp" href="https://wa.me/905458150592?text=Merhaba%2C%20Mezitli%20Taksi%20%C3%A7a%C4%9F%C4%B1rmak%20istiyorum.%20WhatsApp%20%C3%BCzerinden%20canl%C4%B1%20konumumu%20payla%C5%9Faca%C4%9F%C4%B1m." style="display:inline-block;text-decoration:none">🟢 CANLI KONUM PAYLAŞ</a>
     <button class="btn" type="button" onclick="sendMyLocation()" style="border:1px solid var(--yellow);background:#26394a;color:#fff;cursor:pointer">📍 KONUMUMU GÖNDER</button>
+    <button class="btn welcome-voice-btn" id="welcome-voice-button" type="button" onclick="toggleWelcomeVoice()" aria-pressed="false">🔊 KARŞILAMA SESİNİ DİNLE</button>
    </div>
    <p class="hero-note">Mezitli En Güvenli Taksi</p>
   </div>
@@ -412,6 +419,42 @@ header,footer{background:#050505;border-color:#242424}
 </div>
 
 <script>
+const welcomeGreeting = "Mezitli Taksi’ye hoş geldiniz. Güvenli, konforlu ve hızlı ulaşım için doğru yerdesiniz. Bizi tercih ettiğiniz için teşekkür ederiz. İyi yolculuklar dileriz.";
+let welcomeVoiceSpeaking = false;
+function toggleWelcomeVoice(){
+  const button = document.getElementById('welcome-voice-button');
+  if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+    alert('Bu tarayıcı sesli karşılama özelliğini desteklemiyor.');
+    return;
+  }
+  if (welcomeVoiceSpeaking || window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    welcomeVoiceSpeaking = false;
+    if (button) { button.textContent = '🔊 KARŞILAMA SESİNİ DİNLE'; button.setAttribute('aria-pressed','false'); }
+    return;
+  }
+  const utterance = new SpeechSynthesisUtterance(welcomeGreeting);
+  utterance.lang = 'tr-TR';
+  utterance.rate = 0.92;
+  utterance.pitch = 1.08;
+  utterance.volume = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const turkishVoices = voices.filter(voice => voice.lang && voice.lang.toLowerCase().startsWith('tr'));
+  const femaleVoice = turkishVoices.find(voice => /female| kadın|woman|seda|filiz|yelda|emel|defne|female/i.test(voice.name));
+  if (femaleVoice) utterance.voice = femaleVoice;
+  else if (turkishVoices.length) utterance.voice = turkishVoices[0];
+  utterance.onstart = function(){
+    welcomeVoiceSpeaking = true;
+    if (button) { button.textContent = '⏹ SESLENDİRMEYİ DURDUR'; button.setAttribute('aria-pressed','true'); }
+  };
+  utterance.onend = utterance.onerror = function(){
+    welcomeVoiceSpeaking = false;
+    if (button) { button.textContent = '🔊 KARŞILAMA SESİNİ DİNLE'; button.setAttribute('aria-pressed','false'); }
+  };
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
 function sendMyLocation(){
   const status = document.getElementById('location-status');
   if (!navigator.geolocation) {
