@@ -217,6 +217,7 @@ header{box-shadow:0 8px 28px rgba(0,0,0,.16)}
    <div class="actions">
     <a class="btn primary" href="tel:+905458150592">☎ HEMEN TAKSİ ÇAĞIR</a>
     <a class="btn whatsapp" href="https://wa.me/905458150592?text=Merhaba%2C%20taksi%20%C3%A7a%C4%9F%C4%B1rmak%20istiyorum.%20Konumumu%20payla%C5%9F%C4%B1yorum.">◉ WHATSAPP'TAN YAZ</a>
+    <button class="btn" type="button" onclick="sendMyLocation()" style="border:1px solid var(--yellow);background:#26394a;color:#fff;cursor:pointer">📍 KONUMUMU GÖNDER</button>
    </div>
    <p class="hero-note">Mezitli En Güvenli Taksi · 0545 815 05 92</p>
   </div>
@@ -232,6 +233,7 @@ header{box-shadow:0 8px 28px rgba(0,0,0,.16)}
     <a class="home-menu-link" href="#nobetci-eczaneler"><span>💊</span> Nöbetçi Eczaneler</a>
     <a class="home-menu-link" href="#sss"><span>❓</span> Sık Sorulan Sorular</a>
     <a class="home-menu-link" href="https://wa.me/905458150592?text=Merhaba%2C%20Mezitli%20Taksi%27ye%20ula%C5%9Fmak%20istiyorum."><span>💬</span> WhatsApp İletişim</a>
+    <a class="home-menu-link" href="#konum-gonder"><span>📍</span> Konumumu Gönder</a>
    </div>
   </div>
  </section>
@@ -261,6 +263,16 @@ header{box-shadow:0 8px 28px rgba(0,0,0,.16)}
    <div><span class="quick-icon">◷</span><strong>7/24 İletişim</strong><small>Telefonla bize ulaşın</small></div>
    <div><span class="quick-icon">⌖</span><strong>Mezitli ve Mersin</strong><small>Konumunuzu paylaşın</small></div>
    <div><span class="quick-icon">☏</span><strong>Kolay Çağrı</strong><small>Telefon veya WhatsApp</small></div>
+  </div>
+ </section>
+
+ <section id="konum-gonder" class="band">
+  <div class="wrap" style="text-align:center">
+   <div class="eyebrow">Tek seferlik konum paylaşımı</div>
+   <h2 class="section-title">Taksi için konumunuzu gönderin</h2>
+   <p class="intro">Aşağıdaki butona dokunun. Konum izni verdiğinizde bulunduğunuz noktanın harita bağlantısı WhatsApp üzerinden bize gönderilmek üzere açılır. Konumunuz izniniz olmadan alınmaz.</p>
+   <button class="btn primary" type="button" onclick="sendMyLocation()" style="border:0;cursor:pointer">📍 Konumumu WhatsApp'tan Gönder</button>
+   <p id="location-status" role="status" aria-live="polite" style="font-size:13px;color:#b9c5cf;margin-top:12px">Konum paylaşımı yalnızca sizin onayınızla başlar.</p>
   </div>
  </section>
 
@@ -370,5 +382,31 @@ header{box-shadow:0 8px 28px rgba(0,0,0,.16)}
  <a class="call" href="tel:+905458150592">☎ Hemen Ara</a>
  <a class="wa" href="https://wa.me/905458150592?text=Merhaba%2C%20taksi%20%C3%A7a%C4%9F%C4%B1rmak%20istiyorum.%20Konumumu%20payla%C5%9F%C4%B1yorum.">WhatsApp</a>
 </div>
+
+<script>
+function sendMyLocation(){
+  const status = document.getElementById('location-status');
+  if (!navigator.geolocation) {
+    if (status) status.textContent = 'Bu cihaz konum paylaşımını desteklemiyor. WhatsApp üzerinden konum gönderebilirsiniz.';
+    alert('Cihazınız konum paylaşımını desteklemiyor. Lütfen WhatsApp üzerinden konum gönderin.');
+    return;
+  }
+  if (status) status.textContent = 'Konumunuz için izin bekleniyor…';
+  navigator.geolocation.getCurrentPosition(function(position){
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    const mapUrl = 'https://www.google.com/maps?q=' + encodeURIComponent(lat + ',' + lon);
+    const message = 'Merhaba, Mezitli Taksi çağırmak istiyorum. Bulunduğum konum: ' + mapUrl;
+    if (status) status.textContent = 'Konum bağlantısı hazırlandı. WhatsApp açılıyor…';
+    window.location.href = 'https://wa.me/905458150592?text=' + encodeURIComponent(message);
+  }, function(error){
+    let msg = 'Konum alınamadı. Lütfen konum iznini açıp tekrar deneyin veya WhatsApp üzerinden konum gönderin.';
+    if (error && error.code === 1) msg = 'Konum izni verilmedi. Konum paylaşmak için tarayıcı iznini açın.';
+    if (status) status.textContent = msg;
+    alert(msg);
+  }, {enableHighAccuracy:true, timeout:15000, maximumAge:0});
+}
+</script>
+
 </body>
 </html>
