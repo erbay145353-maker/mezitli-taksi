@@ -238,6 +238,13 @@ header,footer{background:#050505;border-color:#242424}
 .welcome-voice-btn:hover{background:#29200b;box-shadow:0 0 22px rgba(255,201,40,.42)}
 .welcome-voice-btn:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
+
+/* Kullanıcı kontrollü, düşük sesli arka plan müziği */
+.background-music-toggle{position:fixed;right:20px;bottom:22px;z-index:8;border:1px solid #ffc928;border-radius:999px;background:#17130a;color:#ffe27a;padding:12px 17px;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.4)}
+.background-music-toggle:hover{background:#29200b}
+.background-music-toggle:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:700px){.background-music-toggle{right:12px;bottom:78px;padding:10px 13px;font-size:12px}}
+
 </style>
 <!-- OneSignal Web Push -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -425,6 +432,7 @@ header,footer{background:#050505;border-color:#242424}
  <p>Telefon: <a href="tel:+905458150592" style="color:#ffc928">0545 815 05 92</a></p>
  <p>© 2026 Tüm hakları saklıdır.</p>
 </footer>
+<button class="background-music-toggle" id="background-music-toggle" type="button" aria-pressed="false">♫ Arka Plan Müziğini Aç</button>
 <div class="mobilebar" aria-label="Hızlı iletişim">
  <a class="call" href="tel:+905458150592">☎ Hemen Ara</a>
  <a class="wa" href="https://wa.me/905458150592?text=Merhaba%2C%20taksi%20%C3%A7a%C4%9F%C4%B1rmak%20istiyorum.%20Konumumu%20payla%C5%9F%C4%B1yorum.">WhatsApp</a>
@@ -505,6 +513,89 @@ function sendMyLocation(){
       keepalive: true
     }).catch(function () {});
   } catch (e) {}
+})();
+</script>
+
+
+<script>
+/* Hafif, piyano tınılı arka plan melodisi. Tarayıcı kuralı gereği kullanıcı dokunuşuyla başlar. */
+(function(){
+  const button = document.getElementById('background-music-toggle');
+  if (!button) return;
+  let audioContext = null;
+  let timer = null;
+  let noteIndex = 0;
+  let master = null;
+  const melody = [60,64,67,72,67,64,62,65,69,74,69,65,60,64,67,72];
+  function playNote(midi, startTime, duration){
+    const fundamental = 440 * Math.pow(2, (midi - 69) / 12);
+    const voice = audioContext.createGain();
+    voice.gain.setValueAtTime(0.0001, startTime);
+    voice.gain.exponentialRampToValueAtTime(0.10, startTime + 0.018);
+    voice.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    voice.connect(master);
+    [1, 2, 3].forEach(function(partial, i){
+      const osc = audioContext.createOscillator();
+      const tone = audioContext.createGain();
+      osc.type = i === 0 ? 'triangle' : 'sine';
+      osc.frequency.value = fundamental * partial;
+      tone.gain.value = i === 0 ? 0.72 : (i === 1 ? 0.20 : 0.06);
+      osc.connect(tone);
+      tone.connect(voice);
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.03);
+    });
+  }
+  function tick(){
+    if (!audioContext || !master) return;
+    const now = audioContext.currentTime + 0.03;
+    const note = melody[noteIndex % melody.length];
+    playNote(note, now, 1.25);
+    if (noteIndex % 4 === 0) {
+      const bass = [48, 45, 43, 47][Math.floor(noteIndex / 4) % 4];
+      playNote(bass, now, 2.1);
+    }
+    noteIndex++;
+  }
+  async function startMusic(){
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) {
+      alert('Bu tarayıcı arka plan sesini desteklemiyor.');
+      return;
+    }
+    audioContext = new AudioCtx();
+    if (audioContext.state === 'suspended') await audioContext.resume();
+    master = audioContext.createGain();
+    master.gain.value = 0.20;
+    master.connect(audioContext.destination);
+    noteIndex = 0;
+    tick();
+    timer = window.setInterval(tick, 1800);
+    button.textContent = '♫ Arka Plan Müziğini Kapat';
+    button.setAttribute('aria-pressed', 'true');
+  }
+  async function stopMusic(){
+    if (timer !== null) window.clearInterval(timer);
+    timer = null;
+    if (audioContext) {
+      const oldContext = audioContext;
+      audioContext = null;
+      master = null;
+      try { await oldContext.close(); } catch(e) {}
+    }
+    button.textContent = '♫ Arka Plan Müziğini Aç';
+    button.setAttribute('aria-pressed', 'false');
+  }
+  button.addEventListener('click', function(){
+    if (timer !== null) stopMusic();
+    else startMusic().catch(function(){
+      stopMusic();
+      alert('Müzik başlatılamadı. Lütfen tekrar deneyin.');
+    });
+  });
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden && timer !== null) stopMusic();
+  });
 })();
 </script>
 
