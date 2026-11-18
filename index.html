@@ -481,7 +481,7 @@ function sendMyLocation(){
     const mapUrl = 'https://www.google.com/maps?q=' + encodeURIComponent(lat + ',' + lon);
     const message = '🚕 MEZİTLİ BÖLGE TAKSİ YOLCULUK TALEBİ\nMerhaba, taksi istiyorum.\n📍 Alınış konumum: ' + mapUrl + '\nLütfen bu konuma göre yönlendirme yapar mısınız?';
     if (status) status.textContent = 'Konum bağlantısı hazırlandı. WhatsApp açılıyor…';
-    window.location.href = 'https://wa.me/905458150592?text=' + encodeURIComponent(message);
+    gtag_report_conversion('https://wa.me/905458150592?text=' + encodeURIComponent(message));
   }, function(error){
     let msg = 'Konum alınamadı. Lütfen konum iznini açıp tekrar deneyin veya WhatsApp üzerinden konum gönderin.';
     if (error && error.code === 1) msg = 'Konum izni verilmedi. Konum paylaşmak için tarayıcı iznini açın.';
@@ -560,6 +560,35 @@ function sendMyLocation(){
     if(document.hidden&&timer)stop();
   });
 })();
+</script>
+
+
+<script>
+/* Google Ads WhatsApp dönüşümü: tüm wa.me bağlantılarını ölç */
+function gtag_report_conversion(url) {
+  var navigated = false;
+  var goToWhatsApp = function () {
+    if (navigated) return;
+    navigated = true;
+    if (url) window.location.href = url;
+  };
+  if (typeof gtag === 'function') {
+    gtag('event', 'conversion', {
+      'send_to': 'AW-16707130620/IpvNCOGYkbsdEPypyp4-',
+      'event_callback': goToWhatsApp
+    });
+    window.setTimeout(goToWhatsApp, 1200);
+  } else {
+    goToWhatsApp();
+  }
+  return false;
+}
+document.addEventListener('click', function (event) {
+  var link = event.target.closest && event.target.closest('a[href*="wa.me/"]');
+  if (!link) return;
+  event.preventDefault();
+  gtag_report_conversion(link.href);
+});
 </script>
 
 </body>
