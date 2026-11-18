@@ -247,6 +247,13 @@ header,footer{background:#050505;border-color:#242424}
 .background-music-toggle:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(max-width:700px){.background-music-toggle{right:12px;bottom:78px;padding:10px 13px;font-size:12px}}
 
+
+/* Kullanılabilirlik ve mobil düzen düzeltmeleri */
+.navcall{transform:none!important}
+.hero .actions .btn,.hero .pill{animation:none!important}
+@media(prefers-reduced-motion:reduce){
+  .welcome-marquee span{animation:none!important;padding-left:0}
+}
 </style>
 <!-- OneSignal Web Push -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -417,6 +424,7 @@ header,footer{background:#050505;border-color:#242424}
  <p>Telefon: <a href="tel:+905458150592" style="color:#ffc928">0545 815 05 92</a></p>
  <p>© 2026 Tüm hakları saklıdır.</p>
 </footer>
+<button class="background-music-toggle" id="background-music-toggle" type="button" aria-pressed="false">♫ Müziği Aç</button>
 <div class="mobilebar" aria-label="Hızlı iletişim">
  <a class="call" href="tel:+905458150592">☎ Hemen Ara</a>
  <a class="wa" href="https://wa.me/905458150592?text=Merhaba%2C%20taksi%20%C3%A7a%C4%9F%C4%B1rmak%20istiyorum.%20Konumumu%20payla%C5%9F%C4%B1yorum.">WhatsApp</a>
@@ -501,53 +509,55 @@ function sendMyLocation(){
 </script>
 
 
+
+
+
 <script>
-/* Otomatik başlatma denemesi; tarayıcı sesli otomatik oynatmayı engellerse ilk kullanıcı etkileşiminde başlar. */
+/* Kullanıcı isterse açılan, sayfa kapanınca duran hafif arka plan müziği */
 (function(){
-  let ctx = null, master = null, timer = null, step = 0, started = false;
-  const chords = [[60,64,67,71],[57,60,64,69],[53,57,60,64],[55,59,62,67]];
-  function midi(n){ return 440*Math.pow(2,(n-69)/12); }
+  const button=document.getElementById('background-music-toggle');
+  if(!button) return;
+  let ctx=null, master=null, timer=null, step=0;
+  const chords=[[60,64,67,71],[57,60,64,69],[53,57,60,64],[55,59,62,67]];
+  const midi=n=>440*Math.pow(2,(n-69)/12);
   function note(freq,when,duration,volume,type){
-    const osc=ctx.createOscillator(), amp=ctx.createGain();
-    osc.type=type||'sine'; osc.frequency.setValueAtTime(freq,when);
-    amp.gain.setValueAtTime(0.0001,when);
-    amp.gain.exponentialRampToValueAtTime(volume,when+0.22);
-    amp.gain.setTargetAtTime(0.0001,when+duration*0.55,duration*0.22);
-    osc.connect(amp); amp.connect(master);
-    osc.start(when); osc.stop(when+duration+1.2);
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type=type||'sine';osc.frequency.setValueAtTime(freq,when);
+    gain.gain.setValueAtTime(.0001,when);
+    gain.gain.exponentialRampToValueAtTime(volume,when+.18);
+    gain.gain.setTargetAtTime(.0001,when+duration*.55,duration*.2);
+    osc.connect(gain);gain.connect(master);
+    osc.start(when);osc.stop(when+duration+1);
   }
   function phrase(){
-    if(!ctx||!master)return;
-    const t=ctx.currentTime+0.08, chord=chords[Math.floor(step/4)%chords.length];
-    const pattern=[0,2,1,3], tone=chord[pattern[step%4]];
+    const t=ctx.currentTime+.05,chord=chords[Math.floor(step/4)%chords.length];
+    const tone=chord[[0,2,1,3][step%4]];
     if(step%4===0){
-      chord.forEach((n,i)=>note(midi(n),t+i*0.035,5.2,0.018,'sine'));
-      note(midi(chord[0]-12),t,4.8,0.026,'triangle');
+      chord.forEach((n,i)=>note(midi(n),t+i*.03,4.8,.009,'sine'));
+      note(midi(chord[0]-12),t,4.5,.012,'triangle');
     }
-    note(midi(tone+12),t,2.5,0.035,'sine');
-    note(midi(tone+12),t+0.025,2.2,0.009,'triangle');
-    step++;
+    note(midi(tone+12),t,2.3,.014,'sine');step++;
   }
-  async function startMusic(){
-    if(started)return;
+  async function start(){
     const AC=window.AudioContext||window.webkitAudioContext;
-    if(!AC)return;
-    ctx=new AC();
+    if(!AC){button.textContent='Müzik desteklenmiyor';return;}
+    if(!ctx)ctx=new AC();
     if(ctx.state==='suspended')await ctx.resume();
-    if(ctx.state!=='running'){try{await ctx.close()}catch(e){}ctx=null;return;}
-    master=ctx.createGain(); master.gain.value=0.62; master.connect(ctx.destination);
-    started=true; step=0; phrase(); timer=window.setInterval(phrase,1050);
-    document.removeEventListener('pointerdown',onFirstInteraction,true);
-    document.removeEventListener('keydown',onFirstInteraction,true);
+    if(!master){master=ctx.createGain();master.gain.value=.45;master.connect(ctx.destination);}
+    if(timer)return;
+    step=0;phrase();timer=window.setInterval(phrase,1250);
+    button.textContent='♫ Müziği Kapat';button.setAttribute('aria-pressed','true');
   }
-  function onFirstInteraction(){ startMusic().catch(()=>{}); }
-  // İlk yüklemede dene; izin verilmezse ilk dokunma/tıklamada başlat.
-  startMusic().catch(()=>{});
-  document.addEventListener('pointerdown',onFirstInteraction,true);
-  document.addEventListener('keydown',onFirstInteraction,true);
-  document.addEventListener('visibilitychange',async()=>{
-    if(document.hidden&&ctx&&ctx.state==='running')await ctx.suspend();
-    else if(!document.hidden&&ctx&&ctx.state==='suspended')await ctx.resume();
+  async function stop(){
+    if(timer){clearInterval(timer);timer=null;}
+    if(ctx&&ctx.state==='running')await ctx.suspend();
+    button.textContent='♫ Müziği Aç';button.setAttribute('aria-pressed','false');
+  }
+  button.addEventListener('click',function(){
+    if(timer)stop();else start().catch(()=>{button.textContent='Müzik açılamadı';});
+  });
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden&&timer)stop();
   });
 })();
 </script>
