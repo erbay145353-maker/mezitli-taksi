@@ -634,10 +634,19 @@ function gtag_report_conversion(url) {
   return false;
 }
 document.addEventListener('click', function (event) {
-  var link = event.target.closest && event.target.closest('a[href*="wa.me/"]');
-  if (!link) return;
-  event.preventDefault();
-  gtag_report_conversion(link.href);
+  var target = event.target.closest && event.target.closest('a');
+  if (!target) return;
+
+  /* Yandex Metrica hedefleri */
+  if (target.href && target.href.indexOf('tel:') === 0) {
+    if (typeof ym === 'function') ym(114269924, 'reachGoal', 'phone_click');
+  }
+
+  if (target.href && target.href.indexOf('https://wa.me/') === 0) {
+    if (typeof ym === 'function') ym(114269924, 'reachGoal', 'whatsapp_click');
+    event.preventDefault();
+    gtag_report_conversion(target.href);
+  }
 });
 </script>
 
